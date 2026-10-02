@@ -1,0 +1,8 @@
+{
+  "$comment": "Path prefix → publishing repository. Prefixes are permanent once an IRI under them is published (ADR-0004). mode: 'custom-domain' = this repo owns the Pages custom domain and is served by pass-through; 'project-site' = served from integral-productivity.github.io/<repo>/<path>.",
+  "origin": "https://integral-productivity.github.io",
+  "prefixes": {
+    "/metawork/": { "repo": "metawork-ontology", "mode": "custom-domain", "turtle": "/metawork.ttl" }
+  },
+  "reserved": ["/holacracy/", "/tpd/", "/mappings/"]
+}
