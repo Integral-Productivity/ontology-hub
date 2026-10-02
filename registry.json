@@ -1,5 +1,5 @@
 {
-  "$comment": "Path prefix → publishing repository. Prefixes are permanent once an IRI under them is published (ADR-0001, inheriting metawork-ontology ADR-0004). mode: 'project-site' = served from <origin>/<repo><path>; 'custom-domain' = passed through to the Pages custom domain (owned by this hub repo, so only the hub's own paths use it). turtle: the ontology's machine-readable file, the 303 target for RDF requests and routed to the same repo. title/source: shown on the landing page.",
+  "$comment": "Path prefix → publishing repository. Prefixes are permanent once an IRI under them is published (ADR-0001, inheriting metawork-ontology ADR-0004). mode: 'project-site' = served from <origin>/<repo><path>; 'custom-domain' = passed through to the Pages custom domain (owned by this hub repo, so only the hub's own paths use it). turtle: the ontology's machine-readable file, the 303 target for RDF requests and routed to the same repo. title/source: shown on the landing page. listed: false hides an entry from the landing page (routing still works) until the ontology's first public release. Turtle rule (ADR-0002): turtle is /<name>.ttl at the root, never under the prefix.",
   "origin": "https://integral-productivity.github.io",
   "prefixes": {
     "/metawork/": {
@@ -8,7 +8,19 @@
       "turtle": "/metawork.ttl",
       "title": "Meta Work",
       "source": "https://github.com/Integral-Productivity/metawork-ontology"
+    },
+    "/vertical-development/": {
+      "repo": "vertical-development-ontology",
+      "mode": "project-site",
+      "turtle": "/vertical-development.ttl",
+      "title": "Vertical Development",
+      "source": "https://github.com/Integral-Productivity/vertical-development-ontology",
+      "listed": false
     }
   },
-  "reserved": ["/holacracy/", "/tpd/", "/mappings/"]
+  "reserved": [
+    "/holacracy/",
+    "/tpd/",
+    "/mappings/"
+  ]
 }

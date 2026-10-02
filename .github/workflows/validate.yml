@@ -21,14 +21,18 @@ jobs:
         run: python build.py > /tmp/ontology-router.js && node --check /tmp/ontology-router.js
       - name: Routing and content-negotiation tests
         run: node --test tests/*.test.mjs
-      - name: Landing page builds and lists every registered prefix
+      - name: Landing page lists every released prefix and hides unreleased ones
         run: |
           python build_site.py site
           python - <<'PY'
           import json
           r = json.load(open("registry.json"))
           page = open("site/index.html", encoding="utf-8").read()
-          missing = [p for p in r["prefixes"] if f'href="{p}"' not in page]
+          listed = [p for p, c in r["prefixes"].items() if c.get("listed", True)]
+          hidden = [p for p in r["prefixes"] if p not in listed]
+          missing = [p for p in listed if f'href="{p}"' not in page]
+          leaked = [p for p in hidden if f'href="{p}"' in page]
           assert not missing, f"landing page is missing {missing}"
-          print("landing page lists", list(r["prefixes"]))
+          assert not leaked, f"landing page lists unreleased {leaked}"
+          print("landing page lists", listed, "hides", hidden)
           PY
