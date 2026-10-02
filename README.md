@@ -47,8 +47,9 @@ live Worker, so this is the gate in front of production. The file is the
 record; apply edits with
 `gh api -X PUT repos/Integral-Productivity/ontology-hub/rulesets/<id> --input .github/rulesets/main.json`.
 
-- `deploy-router.yml` — on change to the Worker or registry. Needs repo secret
-  `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit on account *Integral
+- `deploy-router.yml` — on change to the Worker or registry. Needs secret
+  `CLOUDFLARE_API_TOKEN` in environment `cloudflare`, which only `main` may
+  deploy to (Workers Scripts: Edit on account *Integral
   Productivity LLC*; Workers Routes: Edit and Zone: Read on zone
   `integralproductivity.com`).
 - `pages.yml` — the landing page. Pages source: GitHub Actions; custom domain
