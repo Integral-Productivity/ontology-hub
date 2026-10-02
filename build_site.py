@@ -45,6 +45,8 @@ def page(title: str, body: str) -> str:
 def root_page(registry: dict) -> str:
     rows = ""
     for prefix, cfg in registry["prefixes"].items():
+        if not cfg.get("listed", True):
+            continue  # registered and routed, not yet released (ADR-0002)
         title = html.escape(cfg.get("title", prefix.strip("/")))
         source = cfg.get("source", f"https://github.com/Integral-Productivity/{cfg['repo']}")
         rows += (f'<tr><td><a href="{prefix}">{title}</a></td><td><code>{prefix}</code></td>'

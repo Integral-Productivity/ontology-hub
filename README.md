@@ -28,11 +28,12 @@ docs/adr/          decisions; ADR-0001 records the move from metawork-ontology
 ## Add an ontology
 
 1. In the ontology repo: build its site so files sit under its prefix
-   (`site/<name>/…` and `site/<name>.ttl`), deploy Pages as a project site,
+   (`site/<name>/…`) and the Turtle file at the root (`site/<name>.ttl`), deploy Pages as a project site,
    no custom domain.
-2. Here: add the prefix to `registry.json` (`mode: project-site`, `turtle`,
-   `title`, `source`). Prefixes are permanent once published; reserved ones
-   are listed under `reserved`.
+2. Here: add the prefix to `registry.json` (`mode: project-site`,
+   `turtle: /<name>.ttl` at the root, `title`, `source`, and `listed: false`
+   until the first public release; ADR-0002). Prefixes are permanent once
+   published; reserved ones are listed under `reserved`.
 3. Open a PR. `validate` runs the routing tests; on merge, `deploy-router`
    uploads the Worker and runs `smoke.py`, and `pages` rebuilds the landing page.
 

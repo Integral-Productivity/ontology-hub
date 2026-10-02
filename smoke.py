@@ -8,7 +8,9 @@ Exit 0 when every check passes; prints one line per check either way.
 """
 from __future__ import annotations
 
+import json
 import sys
+from pathlib import Path
 import urllib.error
 import urllib.request
 
@@ -69,6 +71,20 @@ def check_404():
     return s == 404, str(s)
 
 
+def check_registered(prefix: str, cfg: dict):
+    # Every registered prefix, released or not: the Worker routes it to its
+    # repo and negotiates to its Turtle file. The page itself may 404 until
+    # the ontology's site exists, so its status is reported, not asserted.
+    s, h, _ = get(prefix, "text/html")
+    routed = h.get("X-Ontology-Router") == cfg["repo"]
+    s2, h2, _ = get(prefix, "text/turtle")
+    loc = h2.get("Location") or ""
+    neg = s2 == 303 and loc in (cfg["turtle"], BASE + cfg["turtle"])
+    return routed and neg, f"{s} X-Ontology-Router={h.get('X-Ontology-Router')!r}; turtle → {s2} {loc}"
+
+
+REGISTRY = json.loads((Path(__file__).resolve().parent / "registry.json").read_text())
+
 CHECKS = [
     ("GET /metawork/ → 200 text/html", lambda: check_html("/metawork/")),
     ("GET /metawork/vocab/MetaWork/ → 200 text/html", lambda: check_html("/metawork/vocab/MetaWork/")),
@@ -76,6 +92,9 @@ CHECKS = [
     ("GET /metawork.ttl → 200 text/turtle", check_turtle),
     ("GET / → 200, hub landing page lists Meta Work", check_root),
     ("GET /metawork/vocab/does-not-exist/ → 404", check_404),
+] + [
+    (f"{p} routed to {c['repo']}; Accept: text/turtle → 303 → {c['turtle']}", (lambda p=p, c=c: check_registered(p, c)))
+    for p, c in REGISTRY["prefixes"].items()
 ]
 
 if __name__ == "__main__":

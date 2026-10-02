@@ -104,3 +104,36 @@ test("404 from the project site is preserved", async () => {
   const r = await w.get("/metawork/vocab/does-not-exist/");
   assert.equal(r.status, 404);
 });
+
+// ADR-0002: one Turtle rule for every ontology, and every entry is routed.
+test("registry: every turtle is /<name>.ttl at the root (ADR-0002)", () => {
+  for (const [prefix, cfg] of Object.entries(registry.prefixes)) {
+    assert.equal(cfg.turtle, prefix.slice(0, -1) + ".ttl", prefix);
+  }
+});
+
+test("registry: listed, if present, is a boolean", () => {
+  for (const [prefix, cfg] of Object.entries(registry.prefixes)) {
+    if ("listed" in cfg) assert.equal(typeof cfg.listed, "boolean", prefix);
+  }
+});
+
+for (const [prefix, cfg] of Object.entries(registry.prefixes)) {
+  const site = registry.origin + "/" + cfg.repo;
+
+  test(`${prefix}: HTML and Turtle are fetched from ${cfg.repo}`, async () => {
+    const w = loadWorker();
+    const page = await w.get(prefix, "text/html");
+    assert.equal(w.calls[0], site + prefix);
+    assert.equal(page.headers.get("x-ontology-router"), cfg.repo);
+    await w.get(cfg.turtle, "text/turtle");
+    assert.equal(w.calls[1], site + cfg.turtle);
+  });
+
+  test(`${prefix}: RDF request gets 303 to ${cfg.turtle}`, async () => {
+    const w = loadWorker();
+    const r = await w.get(prefix + "anything/", "text/turtle");
+    assert.equal(r.status, 303);
+    assert.equal(r.headers.get("location"), "https://ontology.integralproductivity.com" + cfg.turtle);
+  });
+}
