@@ -1,0 +1,21 @@
+.github/rulesets/main.json
+  s_d874b435796bf9::t_b7dabfc7297d92 1-34
+README.md
+  s_d874b435796bf9::t_1afc5534f579ad 42-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d2bf9a5c9b90fb2bab3c4c29b5aa2e318f334309",
+  "prompts": {},
+  "sessions": {
+    "s_d874b435796bf9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ae224d4c-2641-4536-8a9a-3ceb35e3425d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Kraig Parkinson <kraigparkinson@integralproductivity.com>"
+    }
+  }
+}
