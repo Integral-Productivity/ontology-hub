@@ -39,6 +39,14 @@ docs/adr/          decisions; ADR-0001 records the move from metawork-ontology
 
 ## Deploy
 
+`main` is protected by the repository ruleset in
+[`.github/rulesets/main.json`](.github/rulesets/main.json): changes arrive by
+pull request only (squash), the `router-and-site` check from `validate` must
+pass, and force-push and deletion are blocked. A push to `main` redeploys the
+live Worker, so this is the gate in front of production. The file is the
+record; apply edits with
+`gh api -X PUT repos/Integral-Productivity/ontology-hub/rulesets/<id> --input .github/rulesets/main.json`.
+
 - `deploy-router.yml` — on change to the Worker or registry. Needs repo secret
   `CLOUDFLARE_API_TOKEN` (Workers Scripts: Edit on account *Integral
   Productivity LLC*; Workers Routes: Edit and Zone: Read on zone
