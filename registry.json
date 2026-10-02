@@ -1,8 +1,14 @@
 {
-  "$comment": "Path prefix → publishing repository. Prefixes are permanent once an IRI under them is published (ADR-0004). mode: 'custom-domain' = this repo owns the Pages custom domain and is served by pass-through; 'project-site' = served from integral-productivity.github.io/<repo>/<path>.",
+  "$comment": "Path prefix → publishing repository. Prefixes are permanent once an IRI under them is published (ADR-0001, inheriting metawork-ontology ADR-0004). mode: 'project-site' = served from <origin>/<repo><path>; 'custom-domain' = passed through to the Pages custom domain (owned by this hub repo, so only the hub's own paths use it). turtle: the ontology's machine-readable file, the 303 target for RDF requests and routed to the same repo. title/source: shown on the landing page.",
   "origin": "https://integral-productivity.github.io",
   "prefixes": {
-    "/metawork/": { "repo": "metawork-ontology", "mode": "custom-domain", "turtle": "/metawork.ttl" }
+    "/metawork/": {
+      "repo": "metawork-ontology",
+      "mode": "project-site",
+      "turtle": "/metawork.ttl",
+      "title": "Meta Work",
+      "source": "https://github.com/Integral-Productivity/metawork-ontology"
+    }
   },
   "reserved": ["/holacracy/", "/tpd/", "/mappings/"]
 }

@@ -1,0 +1,63 @@
+name: deploy-router
+
+# Builds the ontology-router Worker from registry.json + worker.js and uploads
+# it to Cloudflare (account "Integral Productivity LLC", zone
+# integralproductivity.com, script ontology-router, route
+# ontology.integralproductivity.com/*), then runs the live smoke checks.
+#
+# Requires repo secret CLOUDFLARE_API_TOKEN with: Zone › Zone › Read,
+# Zone › Workers Routes › Edit (integralproductivity.com), and
+# Account › Workers Scripts › Edit (Integral Productivity LLC).
+
+on:
+  push:
+    branches: [main]
+    paths: ["registry.json", "worker.js", "build.py", ".github/workflows/deploy-router.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-router
+  cancel-in-progress: false
+
+env:
+  ZONE: integralproductivity.com
+  SCRIPT: ontology-router
+  ROUTE: ontology.integralproductivity.com/*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test before deploying
+        run: python build.py > /tmp/ontology-router.js && node --check /tmp/ontology-router.js && node --test tests/*.test.mjs
+      - name: Upload Worker and ensure route
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_TOKEN}" ]; then echo "::error::secret CLOUDFLARE_API_TOKEN is not set"; exit 1; fi
+          api() { curl -sS --fail-with-body -H "Authorization: Bearer ${CF_TOKEN}" "$@"; }
+          zone=$(api "https://api.cloudflare.com/client/v4/zones?name=${ZONE}")
+          ZONE_ID=$(echo "$zone" | jq -r '.result[0].id')
+          ACCOUNT_ID=$(echo "$zone" | jq -r '.result[0].account.id')
+          test "$ZONE_ID" != null && test "$ACCOUNT_ID" != null
+          api -X PUT "https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/workers/scripts/${SCRIPT}" \
+            -F 'metadata={"body_part":"script"};type=application/json' \
+            -F "script=@/tmp/ontology-router.js;type=application/javascript" | jq '{success, errors}'
+          routes=$(api "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/workers/routes")
+          if echo "$routes" | jq -e --arg p "$ROUTE" --arg s "$SCRIPT" '.result[] | select(.pattern==$p and .script==$s)' >/dev/null; then
+            echo "route ${ROUTE} → ${SCRIPT} present"
+          else
+            api -X POST "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/workers/routes" \
+              -H 'Content-Type: application/json' \
+              --data "{\"pattern\":\"${ROUTE}\",\"script\":\"${SCRIPT}\"}" | jq '{success, errors}'
+          fi
+      - name: Live smoke checks
+        run: sleep 20 && python smoke.py

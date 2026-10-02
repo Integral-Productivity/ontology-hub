@@ -1,9 +1,11 @@
 // ontology-router — Cloudflare Worker in front of ontology.integralproductivity.com
 //
-// Does two things (ADR-0004):
-//   1. Routes each registered path prefix to the repository that publishes it.
-//      The prefix that owns the GitHub Pages custom domain is passed through
-//      unchanged; other prefixes are fetched from that repo's project site.
+// Does two things (ontology-hub ADR-0001, inheriting metawork-ontology ADR-0004):
+//   1. Routes each registered path prefix, and its Turtle file, to the
+//      repository that publishes it. 'project-site' prefixes are fetched from
+//      that repo's project site; 'custom-domain' prefixes and every
+//      unregistered path (e.g. "/") pass through to the GitHub Pages custom
+//      domain, which this hub repository owns.
 //   2. Content negotiation: a GET/HEAD under a registered prefix whose Accept
 //      header prefers an RDF media type over HTML gets 303 → the .ttl file.
 //
@@ -23,7 +25,7 @@ addEventListener("fetch", (event) => {
 
 function matchPrefix(path) {
   for (const [prefix, cfg] of Object.entries(REGISTRY.prefixes)) {
-    if (path === prefix.slice(0, -1) || path.startsWith(prefix)) return [prefix, cfg];
+    if (path === prefix.slice(0, -1) || path.startsWith(prefix) || path === cfg.turtle) return [prefix, cfg];
   }
   return [null, null];
 }

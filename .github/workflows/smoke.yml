@@ -1,0 +1,21 @@
+name: smoke
+
+# The acceptance list from metawork-ontology#1, run against the live domain
+# from a GitHub runner (outside the Cloudflare account). Daily, on demand, and
+# on every PR so a reviewer sees the live state next to the change.
+
+on:
+  schedule:
+    - cron: "17 14 * * *"
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python smoke.py
