@@ -57,8 +57,11 @@ def check_turtle():
 
 
 def check_root():
+    # The hub's landing page, not an ontology repo's project-site index.
     s, h, body = get("/", "text/html")
-    return s == 200 and b"Meta Work" in body, f"{s} {ctype(h)} lists Meta Work={b'Meta Work' in body}"
+    hub = b"<h1>Integral Productivity ontologies</h1>" in body
+    listed = b'href="/metawork/"' in body
+    return s == 200 and hub and listed, f"{s} {ctype(h)} hub page={hub} lists /metawork/={listed}"
 
 
 def check_404():
@@ -71,7 +74,7 @@ CHECKS = [
     ("GET /metawork/vocab/MetaWork/ → 200 text/html", lambda: check_html("/metawork/vocab/MetaWork/")),
     ("GET /metawork/vocab/MetaWork/ (Accept: text/turtle) → 303 → /metawork.ttl → 200 text/turtle", check_negotiation),
     ("GET /metawork.ttl → 200 text/turtle", check_turtle),
-    ("GET / → 200, lists Meta Work", check_root),
+    ("GET / → 200, hub landing page lists Meta Work", check_root),
     ("GET /metawork/vocab/does-not-exist/ → 404", check_404),
 ]
 
