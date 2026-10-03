@@ -1,17 +1,22 @@
-# 3. Persistence of the ontology namespaces (w3id.org, or not)
+# 3. Persistence of the ontology namespaces: w3id.org for all prefixes
 
 Date: 2026-10-02
 
 ## Status
 
-**Proposed. Not decided.** This record prepares the decision of
-[metawork-ontology#8](https://github.com/Integral-Productivity/metawork-ontology/issues/8).
-The Marketing role (domain-naming authority, ADR-0001) fills in the Decision
-section. Until then this pull request stays a draft and nothing here is in force.
+Accepted 2026-10-02. Decided by the Marketing role (domain-naming authority,
+ADR-0001) for
+[metawork-ontology#8](https://github.com/Integral-Productivity/metawork-ontology/issues/8): **option 2**, `w3id.org` for all
+prefixes now, with the name `integral-productivity`. The Decision section
+holds the terms.
 
-When accepted, this record supersedes decision 4 of
+This record supersedes decision 4 of
 [metawork-ontology ADR-0004](https://github.com/Integral-Productivity/metawork-ontology/blob/main/docs/adr/0004-one-domain-many-ontologies.md)
-and the "still deferred" line of ADR-0001.
+and closes the "still deferred" line of ADR-0001. Those records are not
+edited; each gets a status note.
+
+The Context, Options, Comparison and Assessment sections are kept as they
+were written to prepare the decision.
 
 ## Context
 
@@ -51,20 +56,34 @@ public.
 ### What w3id.org is
 
 - A redirect service. `https://w3id.org/<name>/…` answers with an HTTP
-  redirect to a URL that the owner of `<name>` chooses.
-- Operation: "A growing group of organizations have pledged responsibility as
-  a consortium to ensure the operation of this website." The stated intent:
-  "All identifiers associated with this website are intended to be around for
-  as long as the Web is around." The agreement is made so that some of the
-  organizations "could fail, lose interest, or become unavailable for long
-  periods of time without negatively affecting the operation of the site."
-  ([w3id.org](https://www.w3id.org))
-- Registration: fork the GitHub repository, add a directory with an
-  `.htaccess` file (the redirect rules) and a `README.md` (contact
-  information), and open a pull request. ([w3id.org](https://www.w3id.org))
-- Names: "There is no official policy on identifier names." The
-  administrators can refuse a name that is too generic or can cause
-  confusion. ([w3id.org](https://www.w3id.org))
+  redirect to a URL that the maintainer of `<name>` chooses. "This service
+  redirects; it does not host files."
+  ([repository README](https://github.com/perma-id/w3id.org/blob/master/README.md))
+- Operation: the W3C Permanent Identifier Community Group runs it
+  ([repository README](https://github.com/perma-id/w3id.org/blob/master/README.md)). The website states the intent: "All
+  identifiers associated with this website are intended to be around for as
+  long as the Web is around", and says that some of the organizations that
+  pledged to operate it "could fail, lose interest, or become unavailable for
+  long periods of time without negatively affecting the operation of the
+  site." ([w3id.org](https://www.w3id.org))
+- Registration: fork the repository, create `ids/<name>/.htaccess` with the
+  redirect rules and the contact, test it, and open a pull request. A
+  `README.md` in the directory is optional. The contact "must include a
+  **GitHub username**". The redirect target must be live, over HTTPS, before
+  the pull request: "Reviewers check this."
+  ([Creating an identifier](https://github.com/perma-id/w3id.org/blob/master/docs/guides/create-an-id.md))
+- Names: no formal policy. Practice: one top-level directory for a project,
+  lower case, digits and hyphens, no generic words.
+  ([Scope](https://github.com/perma-id/w3id.org/blob/master/docs/overview/scope.md))
+- Redirect codes: 302 is the default; 303 is for "content-negotiated ontology
+  IRIs, where the identifier names a *concept* and you are redirecting to a
+  *document about it*"; 301 is to be avoided.
+  ([Creating an identifier](https://github.com/perma-id/w3id.org/blob/master/docs/guides/create-an-id.md))
+- A change of maintainer is a pull request that updates the contact, with
+  "**both** the outgoing and incoming maintainer visible on it". "Do this
+  while the outgoing maintainer is still reachable. The alternative is a
+  namespace nobody can legitimately change."
+  ([Updating an existing identifier](https://github.com/perma-id/w3id.org/blob/master/docs/guides/maintain-an-id.md))
 - Common practice: Garijo and Poveda-Villalón (2020), section 2.5, recommend
   permanent URIs for the long-term sustainability of an ontology, and name
   `purl.org` and `w3id.org` as the services most used. The same paper says an
@@ -95,22 +114,21 @@ changes, and each published IRI keeps working.
 
 Two facts follow from that picture:
 
-1. **The Institute does not have to exist first.** A w3id entry is two files
-   in a git repository. The contact in its README can be the LLC's
-   role-holder today and the Institute later; the change is a pull request.
-   ADR-0004 deferred partly because "the Institute does not yet exist to own
-   the w3id entry". *This is an inference from the registration procedure,
-   not a statement by w3id.org.*
+1. **The Institute does not have to exist first.** A w3id entry is one file
+   in a git repository. Its contact can be the LLC's role-holder today and
+   the Institute's later; w3id.org documents that change as a pull request
+   (see above). ADR-0004 deferred partly because "the Institute does not yet
+   exist to own the w3id entry".
 2. **The IRI and the serving URL become different.** Today the two site
    builders and their CI checks assume that the base IRI's host is the host
    that serves the pages (`tools/build_site.py` in both ontology
    repositories; the "every minted IRI maps to a file" assertion in each
    `pages.yml`). With w3id, the base IRI is on `w3id.org` and the pages are
    on this host. The builders need a second setting, the serving origin.
-   `ontology-tooling` is in construction now
-   ([metawork-ontology#10](https://github.com/Integral-Productivity/metawork-ontology/issues/10)).
-   It is cheaper to give it that setting before version 0.1.0 than after two
-   repositories use it.
+   `ontology-tooling` (version 0.1.1 when this record was accepted) has the
+   same assumption: `site.py` refuses a base IRI that is not
+   `<origin>/<name>`. It needs the second setting before an ontology with a
+   w3id base can build.
 
 ## Options
 
@@ -244,25 +262,116 @@ grows with each release.
 
 ## Decision
 
-*Not made. To be filled in by the Marketing role:*
+Made by the Marketing role on 2026-10-02.
 
-- Option: …
-- Entity that owns the identifiers: …
-- Name and contact, if w3id: …
-- What happens to the Meta Work namespace: …
-- Namespace pattern for new ontologies: …
+1. **Option 2.** Each ontology namespace of this host is under
+   `https://w3id.org/integral-productivity/`. The pattern for an ontology
+   with the registry prefix `/<ontology>/`:
+
+   | | Before | After |
+   |---|---|---|
+   | Ontology and schema terms | `https://ontology.integralproductivity.com/<ontology>#…` | `https://w3id.org/integral-productivity/<ontology>#…` |
+   | Concepts and other paths | `https://ontology.integralproductivity.com/<ontology>/vocab/…` | `https://w3id.org/integral-productivity/<ontology>/vocab/…` |
+
+   Only the part before `/<ontology>` changes.
+
+2. **The name is `integral-productivity`.** It fits the LLC today and the
+   Institute later. It was free on 2026-10-02 (`ids/` of `perma-id/w3id.org`
+   at commit `366cf4f`).
+
+3. **The w3id entry** is `ids/integral-productivity/.htaccess`: one rule that
+   keeps the path and redirects each request to
+   `https://ontology.integralproductivity.com/`. The redirect code is 303,
+   which w3id.org documents for ontology IRIs. Content negotiation stays in
+   this hub's Worker; the entry has no `Accept` rules.
+
+4. **The contact** in the entry is the role-holder's GitHub username and this
+   repository. No email address is published.
+
+5. **Owner of the identifiers:** Integral Productivity LLC, through the
+   Marketing role, until the Institute exists. Then the entry moves to the
+   Institute with the repositories (the stewardship decision that
+   metawork-ontology ADR-0004 cites). The move is a pull request at
+   w3id.org that updates the contact.
+
+6. **Meta Work re-mints now.** Its names under
+   `https://ontology.integralproductivity.com/metawork` stop being the names
+   of the ontology. This host continues to serve those addresses. No promise
+   is made about how long.
+
+7. **Nothing changes in the routing.** The registry, the Worker, the
+   Turtle-at-root rule (ADR-0002) and `listed: false` stay as they are. This
+   host stays the place that serves each page and each file.
+
+### Order of work
+
+The order matters, because a name must resolve on the day it becomes public.
+
+1. This record is merged.
+2. The w3id entry is merged at `perma-id/w3id.org`, and
+   `curl -sIL https://w3id.org/integral-productivity/metawork/` ends at this
+   host with `200`. The target is live today, so the pull request can be
+   opened at once.
+3. `ontology-tooling` separates the base IRI from the serving origin.
+4. Meta Work changes its base IRI and releases a new version; the plugin's
+   fixture and sync test follow.
+5. Vertical Development changes its base IRI **before** its first public
+   release. That release does not happen before step 2 is done.
+6. This hub's `smoke.py` follows the w3id redirect for each registered
+   prefix.
 
 ## Consequences
 
-*To be written with the decision.* For each option, the first actions are in
-"Work now" above. In each case `vertical-development-ontology#2` gets a
-comment with the result, and GlassFrog action
-`actn_b17d05ea24094bc28625da4afb91c4bd` (Marketing) is marked completed.
+**Positive**
+
+- A change of host, domain or steward is a change of one line at w3id.org.
+  Each published name continues to work. The stated goal of ADR-0004 ("the
+  ontologies are meant to outlive any one entity") is met.
+- One namespace pattern for the family, decided before the second ontology
+  is public.
+- The decision is no longer open: gate item 2 of
+  vertical-development-ontology ADR-0006 can close when step 2 above is done.
+
+**Negative**
+
+- A breaking change for Meta Work on its second day. One known consumer (the
+  plugin's sync test) must change.
+- Each request for a name makes one more hop, through a service that
+  Integral Productivity does not operate.
+- A change of the redirect waits for a merge by the w3id.org maintainers.
+  How long that takes was not known when this record was accepted. It is a
+  schedule risk for the release planned for 2026-10-23.
+- The name `integral-productivity` is permanent.
+- **One maintainer.** The entry lists one GitHub account. w3id.org warns
+  that an entry whose maintainer cannot be reached is "a namespace nobody
+  can legitimately change". Add a second maintainer when a second person
+  holds a role with this accountability (for example a director of the
+  Institute).
+- The base IRI's host is no longer the serving host. The tooling and three
+  CI checks assumed that it is, and must change (see the issues below).
+
+**Tracking**
+
+Each item of work that this record names has one issue.
+
+- Register the entry at w3id.org and verify it (step 2):
+  [metawork-ontology#8](https://github.com/Integral-Productivity/metawork-ontology/issues/8)
+- Base IRI separate from the serving origin (step 3):
+  [ontology-tooling#7](https://github.com/Integral-Productivity/ontology-tooling/issues/7)
+- Re-mint Meta Work (step 4):
+  [metawork-ontology#16](https://github.com/Integral-Productivity/metawork-ontology/issues/16)
+- Vertical Development's base IRI (step 5):
+  [vertical-development-ontology#2](https://github.com/Integral-Productivity/vertical-development-ontology/issues/2)
+- Hub smoke check and pages (step 6):
+  [ontology-hub#16](https://github.com/Integral-Productivity/ontology-hub/issues/16)
 
 ## Sources
 
 - w3id.org, "Permanent Identifiers for the Web": <https://www.w3id.org>
   (read 2026-10-02).
+- `perma-id/w3id.org`, commit `366cf4f` (2026-10-02): `README.md`,
+  `docs/guides/create-an-id.md`, `docs/guides/maintain-an-id.md`,
+  `docs/guides/content-negotiation.md`, `docs/overview/scope.md`.
 - Garijo, D. and Poveda-Villalón, M. (2020). *Best Practices for Implementing
   FAIR Vocabularies and Ontologies on the Web.*
   <https://arxiv.org/pdf/2003.13084>, sections 2, 2.5 and 4.1.
