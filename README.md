@@ -33,7 +33,9 @@ docs/adr/          decisions; ADR-0001 records the move from metawork-ontology
 2. Here: add the prefix to `registry.json` (`mode: project-site`,
    `turtle: /<name>.ttl` at the root, `title`, `source`, and `listed: false`
    until the first public release; ADR-0002). Prefixes are permanent once
-   published; reserved ones are listed under `reserved`.
+   published; reserved ones are listed under `reserved`. `listed` is the
+   release signal (ADR-0004): removing `listed: false` puts the prefix on the
+   landing page and makes `smoke.py` assert its page and Turtle file.
 3. Open a PR. `validate` runs the routing tests; on merge, `deploy-router`
    uploads the Worker and runs `smoke.py`, and `pages` rebuilds the landing page.
 
@@ -55,7 +57,12 @@ record; apply edits with
 - `pages.yml` — the landing page. Pages source: GitHub Actions; custom domain
   `ontology.integralproductivity.com`, Enforce HTTPS on.
 - `smoke.yml` — daily and on demand; the acceptance checks from
-  [metawork-ontology#1](https://github.com/Integral-Productivity/metawork-ontology/issues/1).
+  [metawork-ontology#1](https://github.com/Integral-Productivity/metawork-ontology/issues/1),
+  run for every prefix in `registry.json` (ADR-0004). Routing and 303
+  negotiation are asserted for every prefix; the page and Turtle file are
+  asserted for released prefixes and reported as `PEND` for `listed: false`
+  ones. Only `FAIL` fails the run. Planning logic is unit-tested with
+  `python -m unittest discover -s tests`.
 
 Manual equivalent: `python build.py > /tmp/ontology-router.js`, then upload as
 Workers script `ontology-router` (`PUT /accounts/{account}/workers/scripts/ontology-router`,
