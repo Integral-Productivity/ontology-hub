@@ -1,0 +1,27 @@
+tests/test_smoke.py
+  s_97a057eb604eca::t_3d44a5b71c47fd 1-101
+docs/adr/0004-smoke-checks-every-prefix-listed-marks-release.md
+  s_97a057eb604eca::t_43f88acdf41f5e 1-90
+  s_97a057eb604eca::t_772750db5c86c1 91
+README.md
+  s_97a057eb604eca::t_5fd96302562202 60-65
+  s_97a057eb604eca::t_79892aec0b7b8f 36-38
+smoke.py
+  s_97a057eb604eca::t_9841c424377a68 2-4,8-13,20,24-25,27-75,77-93,121-127,129,132-137,140,142-143,154-158,160,163-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "234c8272cbb6ccc7f3f55929d1863dce9528e9f3",
+  "prompts": {},
+  "sessions": {
+    "s_97a057eb604eca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62c34479-83a8-4989-ac57-b78ec71f1334",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Kraig Parkinson <kraigparkinson@integralproductivity.com>"
+    }
+  }
+}
