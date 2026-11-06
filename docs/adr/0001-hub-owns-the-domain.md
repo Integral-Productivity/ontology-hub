@@ -9,6 +9,12 @@ Accepted. Inherits
 ("One domain for many ontologies") and supersedes the parts of it that place
 the registry and router in `metawork-ontology`.
 
+Status note (2026-10-02): the line "Persistence (w3id.org): … still deferred"
+under Consequences is closed by
+[ADR-0003](0003-persistence-of-ontology-namespaces.md). The namespaces move
+under `https://w3id.org/integral-productivity/`. The text below is left as it
+was decided.
+
 ## Context
 
 ADR-0004 in `metawork-ontology` settled the naming scheme for
